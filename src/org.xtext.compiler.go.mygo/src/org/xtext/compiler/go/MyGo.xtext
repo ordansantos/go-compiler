@@ -1,0 +1,170 @@
+grammar org.xtext.compiler.go.MyGo with org.eclipse.xtext.common.Terminals
+
+generate myGo "http://www.xtext.org/compiler/go/MyGo"
+// https://tour.golang.org/basics/13
+
+Model:
+	package+=Package
+	imports+=Imports
+	declarations+=Declarations*
+;
+
+Declarations:
+	functionDeclaration=FunctionDeclaration |
+	typeDeclaration=TypeDeclaration
+;
+	
+Package:
+	'package' ID
+;
+
+Imports:
+	('import' STRING)*
+;
+
+FunctionDeclaration:
+	'func' (receiver=Receiver)? id=ID '(' (parameters=ParametersDeclaration)? ')' (type=Type)? '{' body=Body '}'
+;
+
+Receiver:
+	'(' idName=ID idType=ID ')'
+;
+
+Body:
+	{Body} lineCommand += LineCommand*
+;
+
+LineCommand:
+	FuncCall ";"? | 
+	VariableDeclaration ";"? |
+	ReturnStatement ";"? |
+	ForRange ";"? |
+	Assignment ";"?
+;
+
+Assignment:
+	id=ID '=' expression=Expression
+;
+
+ForRange:
+	'for' id1=ID ':=' 'range' expression=Expression '{' lineCommand += LineCommand* '}'|
+	'for' id1=ID ',' id2=ID ':=' 'range' expression=Expression '{' lineCommand += LineCommand* '}'
+;
+
+ParametersDeclaration:
+	idType+=IdType (',' idType+=IdType)*
+;
+
+ParametersValues:
+	{ParametersValues} (expression += Expression (',' expression += Expression)*)?
+;
+
+Type:
+	'int' | 'float64' | 'bool' | 'string' | ID
+;
+
+TypeDeclaration:
+	'type' id=ID type=Type
+;
+
+Value:
+	intValue=IntValue | 
+	floatValue=FloatValue | 
+	stringValue=StringValue | 
+	boolValue=BoolValue
+;
+
+IntValue:
+	INT
+;
+
+FloatValue:
+	INT '.' INT
+;
+
+StringValue:
+	STRING
+;
+
+BoolValue:
+	'true' | 'false'
+;
+
+IdType:
+	id=ID type=Type
+;
+
+FuncCall:
+	receiverInstance=ReceiverInstance? id=ID '(' parametersValues=ParametersValues ')' 
+;
+
+ReceiverInstance:
+	id=ID '.'
+;
+
+Expression returns Expression:
+	Expression2 ({Expression.left=current} binaryOp=BinaryOpPrecedence1 right=Expression2)*
+;
+
+Expression2 returns Expression:
+	Expression3 ({Expression2.left=current} binaryOp=BinaryOpPrecedence2 right=Expression3)*
+;
+
+Expression3 returns Expression:
+	Expression4 ({Expression3.left=current} binaryOp=BinaryOpPrecedence3 right=Expression4)*
+;
+
+Expression4 returns Expression:
+	Expression5 ({Expression4.left=current} binaryOp=BinaryOpPrecedence4 right=Expression5)*
+;
+
+Expression5 returns Expression:
+	UnaryExpr ({Expression5.left=current} binaryOp=BinaryOpPrecedence5 right=UnaryExpr)*
+;
+
+
+UnaryExpr returns Expression:
+	Value |
+	Variable |
+	FuncCall |
+	'(' Expression ')'
+;
+
+ExplicitCast:
+	type=Type '(' expression=Expression ')'
+;
+
+Variable:
+	id=ID
+;
+
+BinaryOpPrecedence1:
+	'||'
+;
+
+BinaryOpPrecedence2:
+	'&&'
+;
+
+BinaryOpPrecedence3:
+	'==' | '!=' | '<' | '<=' | '>' | '>='
+;
+
+BinaryOpPrecedence4:
+	'+' | '-' | '|' | '^'
+;
+
+BinaryOpPrecedence5:
+	'*' | '/' | '%' | '<<' | '>>' | '&' | '&^'
+;
+
+VariableDeclaration:
+	'var' ids+=ID (',' ids += ID)* '=' expression=Expression |
+	'var' ids+=ID (',' ids += ID)* type=Type |
+	'var' ids+=ID (',' ids += ID)* type=Type '=' expression=Expression	
+;
+
+ReturnStatement:
+	'return' expression=Expression
+;
+

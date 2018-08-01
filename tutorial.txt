@@ -1,0 +1,22 @@
+
+Tutorial for those who want writing their own compiler by scratch using xtext. Hope it helps.
+
+1. Install extex in Eclipse: http://marketplace.eclipse.org/content/xtext
+2. If you got this error: "Couldn't resolve reference to Grammar 'org.eclipse.xtext.common.Terminals'."
+	- then install eclipse PDE from marketplace
+3. Watch this: https://vimeo.com/138873446
+4. Read these tutorials: 
+	https://www.eclipse.org/Xtext/documentation/102_domainmodelwalkthrough.html
+	http://www.euclideanspace.com/software/development/eclipse/xtext/grammar/index.htm
+	http://www.euclideanspace.com/software/development/eclipse/xtext/grammar/lexer/index.htm
+	very important - https://www.eclipse.org/Xtext/documentation/301_grammarlanguage.html
+5. Take a look at:
+	org.xtext.compiler.go.MyGo.MyGo.xtext
+	org.xtext.compiler.go.tests MyGoParsingText
+6. Grammar specification
+	https://golang.org/ref/spec
+7. Left recursion
+	https://stackoverflow.com/questions/36897472/removing-left-recursion-in-xtext
+    https://typefox.io/parsing-expressions-with-xtext <- very useful    	
+8. http://typefox.io/parsing-expressions-with-xtext
+
